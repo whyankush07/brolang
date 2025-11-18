@@ -15,6 +15,16 @@ model Bug {
   status    Status   @default(OPEN)
 }
 
+model User {
+  id               String   @id @default(uuid())
+  name             String
+  email            String   @unique
+  verificationCode String
+  phoneNumber      String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
 enum Status {
   OPEN
   CLOSED

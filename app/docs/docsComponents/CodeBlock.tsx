@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,19 +12,19 @@ interface CodeBlockProps {
     className?: string;
 }
 
-const expandCollapse = {
+const expandCollapse: Variants = {
     collapsed: {
         height: 160,
         transition: {
             duration: 0.4,
-            ease: 'easeInOut'
+            ease: [0.4, 0, 0.2, 1] as any
         }
     },
     expanded: {
         height: 'auto',
         transition: {
             duration: 0.4,
-            ease: 'easeInOut'
+            ease: [0.4, 0, 0.2, 1] as any
         }
     }
 };

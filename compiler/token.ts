@@ -1,3 +1,5 @@
+import { BrolangConfig } from './config/defaultConfig';
+
 export type TokenType = string;
 
 export interface Token {
@@ -54,7 +56,7 @@ export const FALSE: TokenType = "jhuth";
 export const BREAK: TokenType = "bas_kar_bhai";
 export const CONTINUE: TokenType = "aage_bhad_bhai";
 
-const keywords: Record<string, TokenType> = {
+const defaultKeywords: Record<string, TokenType> = {
   "bhai_sun": LET,
   "bol_bhai": PRINT,
   "suna_bhai": INPUT,
@@ -69,11 +71,37 @@ const keywords: Record<string, TokenType> = {
   "aage_bhad_bhai": CONTINUE,
 };
 
+// Token type name to token type constant mapping
+const tokenTypeMap: Record<string, TokenType> = {
+  "LET": LET,
+  "PRINT": PRINT,
+  "INPUT": INPUT,
+  "IF": IF,
+  "ELSE": ELSE,
+  "ELSE_IF": ELSE_IF,
+  "WHILE": WHILE,
+  "FOR": FOR,
+  "TRUE": TRUE,
+  "FALSE": FALSE,
+  "BREAK": BREAK,
+  "CONTINUE": CONTINUE,
+};
+
 // LookupIdent checks if the given identifier is a keyword or not
-export function lookupIdent(ident: string): TokenType {
-  if (keywords[ident]) {
-    return keywords[ident];
+export function lookupIdent(ident: string, config?: BrolangConfig): TokenType {
+  // First check if config has custom keywords
+  if (config?.tokens?.keywords) {
+    const tokenTypeName = config.tokens.keywords[ident];
+    if (tokenTypeName && tokenTypeMap[tokenTypeName]) {
+      return tokenTypeMap[tokenTypeName];
+    }
   }
+  
+  // Fall back to default keywords
+  if (defaultKeywords[ident]) {
+    return defaultKeywords[ident];
+  }
+  
   return IDENT;
 }
 

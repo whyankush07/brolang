@@ -1,25 +1,16 @@
 'use client';
 import { CodeState, CodeContextType } from '@/types/code';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { compileBrolang } from '@/compiler';
 const CodeContext = createContext<CodeContextType | undefined>(undefined);
 
-export type preferredLanguage = 'hindi' | 'english';
-
 export function CodeProvider({ children }: { children: React.ReactNode }) {
-    const [prefLanguage, setPreflanguage] = useState<preferredLanguage>('hindi');
     const [codeState, setCodeState] = useState<CodeState>({
         code: hindiCode,
         response: '',
         isLoading: false,
     });
-
-    useEffect(() => {
-        setCodeState(prev => ({
-            ...prev,
-            code: prefLanguage === 'hindi' ? hindiCode : englishCode,
-        }));
-    }, [prefLanguage]);
 
     const setCode = (code: string) => {
         setCodeState(prev => ({ ...prev, code }));
@@ -28,27 +19,20 @@ export function CodeProvider({ children }: { children: React.ReactNode }) {
     const submitCode = async () => {
         try {
             setCodeState(prev => ({ ...prev, isLoading: true }));
-            let response;
-            if (prefLanguage === 'hindi') {
-                response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/compile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: codeState.code }),
-                });
+            const result = await compileBrolang(codeState.code);
+            if (result.success) {
+                setCodeState(prev => ({
+                    ...prev,
+                    response: result.output || '',
+                    isLoading: false,
+                }));
             } else {
-                response = await fetch(`${process.env.NEXT_PUBLIC_ENGLISH_API_URL}/compile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: codeState.code }),
-                });
+                setCodeState(prev => ({
+                    ...prev,
+                    response: result.errors.join('\n'),
+                    isLoading: false,
+                }));
             }
-
-            const data = await response.json();
-            setCodeState(prev => ({
-                ...prev,
-                response: data.error || data.result,
-                isLoading: false,
-            }));
         } catch (error) {
             setCodeState(prev => ({
                 ...prev,
@@ -60,7 +44,7 @@ export function CodeProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <CodeContext.Provider value={{ codeState, setCode, submitCode, prefLanguage, setPreflanguage }}>
+        <CodeContext.Provider value={{ codeState, setCode, submitCode }}>
             {children}
         </CodeContext.Provider>
     );

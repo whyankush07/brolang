@@ -3,7 +3,11 @@ import { BObject } from "./object";
 export class Environment {
   store: Record<string, BObject> = {};
   outer?: Environment;
-  constructor(outer?: Environment) { this.outer = outer; }
+  prints: string[] = [];
+  constructor(outer?: Environment) { 
+    this.outer = outer; 
+    if (outer) this.prints = outer.prints; // share prints
+  }
   get(name: string): BObject | undefined {
     const obj = this.store[name];
     if (obj === undefined && this.outer) return this.outer.get(name);

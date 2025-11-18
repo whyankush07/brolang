@@ -3,11 +3,11 @@ import { CodeProvider } from '@/context/CodeContext';
 import { CodeEditor } from '@/components/code/CodeEditor';
 import { ResponsePanel } from '@/components/code/ResponsePanel';
 import { SubmitButton } from '@/components/code/Submitbutton';
-import { motion } from 'framer-motion';
-import PreferredLanguageSelector from '@/components/PreferredLanguageSelector';
+import { motion, Variants } from 'framer-motion';
+import SyntaxEditor from '@/components/SyntaxEditor';
 
 export default function CodePlaygroundPage() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -18,26 +18,26 @@ export default function CodePlaygroundPage() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
+        ease: [0.4, 0, 0.2, 1] as any
       }
     }
   };
 
-  const titleVariants = {
+  const titleVariants: Variants = {
     hidden: { x: -20, opacity: 0 },
     visible: {
       x: 0,
       opacity: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
+        ease: [0.4, 0, 0.2, 1] as any
       }
     }
   };
@@ -69,7 +69,7 @@ export default function CodePlaygroundPage() {
               >
                 Write and execute your Brolang code below.
               </motion.p>
-              <PreferredLanguageSelector />
+              <SyntaxEditor />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -1,13 +1,16 @@
-import { Token, makeToken, EOF, ILLEGAL, IDENT, INT, ASSIGN, PLUS, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, LET, BANG, MINUS, SLASH, ASTERISK, LT, GT, EQ, NOT_EQ, lookupIdent } from "./token";
+import { Token, makeToken, EOF, ILLEGAL, IDENT, INT, STRING, ASSIGN, PLUS, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, LET, BANG, MINUS, SLASH, ASTERISK, MOD, LT, GT, EQ, NOT_EQ, GTE, LTE, lookupIdent } from "./token";
+import { BrolangConfig } from './config/defaultConfig';
 
 export class Lexer {
   private input: string;
   private position = 0;
   private readPosition = 0;
   private ch = "";
+  private config?: BrolangConfig;
 
-  constructor(input: string) {
+  constructor(input: string, config?: BrolangConfig) {
     this.input = input;
+    this.config = config;
     this.readChar();
   }
 
@@ -64,11 +67,26 @@ export class Lexer {
       case "*":
         tok = makeToken(ASTERISK, this.ch);
         break;
+      case "%":
+        tok = makeToken(MOD, this.ch);
+        break;
       case "<":
-        tok = makeToken(LT, this.ch);
+        if (this.peekChar() === "=") {
+          const ch = this.ch;
+          this.readChar();
+          tok = makeToken(LTE, ch + this.ch);
+        } else {
+          tok = makeToken(LT, this.ch);
+        }
         break;
       case ">":
-        tok = makeToken(GT, this.ch);
+        if (this.peekChar() === "=") {
+          const ch = this.ch;
+          this.readChar();
+          tok = makeToken(GTE, ch + this.ch);
+        } else {
+          tok = makeToken(GT, this.ch);
+        }
         break;
       case ",":
         tok = makeToken(COMMA, this.ch);
@@ -88,13 +106,25 @@ export class Lexer {
       case "}":
         tok = makeToken(RBRACE, this.ch);
         break;
+      case "[":
+        tok = makeToken(LBRACKET, this.ch);
+        break;
+      case "]":
+        tok = makeToken(RBRACKET, this.ch);
+        break;
+      case '"':
+        tok = makeToken(STRING, this.readString());
+        break;
+      case "'":
+        tok = makeToken(STRING, this.readString());
+        break;
       case "":
         tok = makeToken(EOF, "");
         break;
       default:
         if (this.isLetter(this.ch)) {
           const literal = this.readIdentifier();
-          const type = lookupIdent(literal);
+          const type = lookupIdent(literal, this.config);
           return makeToken(type, literal);
         } else if (this.isDigit(this.ch)) {
           const literal = this.readNumber();
@@ -116,7 +146,7 @@ export class Lexer {
 
   private readIdentifier(): string {
     const pos = this.position;
-    while (this.isLetter(this.ch)) {
+    while (this.isLetter(this.ch) || this.isDigit(this.ch) || this.ch === "_") {
       this.readChar();
     }
     return this.input.slice(pos, this.position);
@@ -128,6 +158,18 @@ export class Lexer {
       this.readChar();
     }
     return this.input.slice(pos, this.position);
+  }
+
+  private readString(): string {
+    const quote = this.ch;
+    this.readChar(); // skip opening quote
+    const pos = this.position;
+    while (this.ch !== quote && this.ch !== "") {
+      this.readChar();
+    }
+    const str = this.input.slice(pos, this.position);
+    // Don't call readChar() here - it will be called by nextToken() after the switch
+    return str;
   }
 
   private isLetter(ch: string): boolean {

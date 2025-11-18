@@ -1,3 +1,5 @@
+import { BrolangConfig } from './config/defaultConfig';
+
 export type ErrorType = string;
 
 // Error constants
@@ -11,7 +13,7 @@ export const IDENTIFIER_NOT_FOUND_ERROR: ErrorType = "IDENTIFIER_NOT_FOUND_ERROR
 export const NOT_A_FUNCTION_ERROR: ErrorType = "NOT_A_FUNCTION_ERROR";
 
 // Error message templates with Hindi flavor
-const errorMessages: Record<ErrorType, string> = {
+const defaultErrorMessages: Record<ErrorType, string> = {
   [PARSE_INTEGER_ERROR]: "Arre bhai, ye number nahi hai: '{literal}' - kya kar raha hai tu?",
   [NO_PREFIX_PARSE_FN_ERROR]: "Bhai, is '{token}' ke liye koi parse function nahi mila - galat syntax hai!",
   [EXPECTED_TOKEN_ERROR]: "Expected tha '{expected}', mila '{got}' - syntax thik kar bhai!",
@@ -23,8 +25,9 @@ const errorMessages: Record<ErrorType, string> = {
 };
 
 // Function to get error message with replacements
-export function getErrorMessage(errorType: ErrorType, replacements: Record<string, string> = {}): string {
-  let message = errorMessages[errorType];
+export function getErrorMessage(errorType: ErrorType, replacements: Record<string, string> = {}, config?: BrolangConfig): string {
+  const messages = config ? { ...defaultErrorMessages, ...config.errors.messages } : defaultErrorMessages;
+  let message = messages[errorType];
   if (!message) {
     return `Unknown error type: ${errorType}`;
   }
@@ -38,34 +41,34 @@ export function getErrorMessage(errorType: ErrorType, replacements: Record<strin
 }
 
 // Helper functions for specific error types
-export function parseIntegerError(literal: string): string {
-  return getErrorMessage(PARSE_INTEGER_ERROR, { literal });
+export function parseIntegerError(literal: string, config?: BrolangConfig): string {
+  return getErrorMessage(PARSE_INTEGER_ERROR, { literal }, config);
 }
 
-export function noPrefixParseFnError(token: string): string {
-  return getErrorMessage(NO_PREFIX_PARSE_FN_ERROR, { token });
+export function noPrefixParseFnError(token: string, config?: BrolangConfig): string {
+  return getErrorMessage(NO_PREFIX_PARSE_FN_ERROR, { token }, config);
 }
 
-export function expectedTokenError(expected: string, got: string): string {
-  return getErrorMessage(EXPECTED_TOKEN_ERROR, { expected, got });
+export function expectedTokenError(expected: string, got: string, config?: BrolangConfig): string {
+  return getErrorMessage(EXPECTED_TOKEN_ERROR, { expected, got }, config);
 }
 
-export function unknownPrefixOperatorError(operator: string, type: string): string {
-  return getErrorMessage(UNKNOWN_PREFIX_OPERATOR_ERROR, { operator, type });
+export function unknownPrefixOperatorError(operator: string, type: string, config?: BrolangConfig): string {
+  return getErrorMessage(UNKNOWN_PREFIX_OPERATOR_ERROR, { operator, type }, config);
 }
 
-export function unknownInfixOperatorError(leftType: string, operator: string, rightType: string): string {
-  return getErrorMessage(UNKNOWN_INFIX_OPERATOR_ERROR, { leftType, operator, rightType });
+export function unknownInfixOperatorError(leftType: string, operator: string, rightType: string, config?: BrolangConfig): string {
+  return getErrorMessage(UNKNOWN_INFIX_OPERATOR_ERROR, { leftType, operator, rightType }, config);
 }
 
-export function typeMismatchError(leftType: string, operator: string, rightType: string): string {
-  return getErrorMessage(TYPE_MISMATCH_ERROR, { leftType, operator, rightType });
+export function typeMismatchError(leftType: string, operator: string, rightType: string, config?: BrolangConfig): string {
+  return getErrorMessage(TYPE_MISMATCH_ERROR, { leftType, operator, rightType }, config);
 }
 
-export function identifierNotFoundError(identifier: string): string {
-  return getErrorMessage(IDENTIFIER_NOT_FOUND_ERROR, { identifier });
+export function identifierNotFoundError(identifier: string, config?: BrolangConfig): string {
+  return getErrorMessage(IDENTIFIER_NOT_FOUND_ERROR, { identifier }, config);
 }
 
-export function notAFunctionError(type: string): string {
-  return getErrorMessage(NOT_A_FUNCTION_ERROR, { type });
+export function notAFunctionError(type: string, config?: BrolangConfig): string {
+  return getErrorMessage(NOT_A_FUNCTION_ERROR, { type }, config);
 }

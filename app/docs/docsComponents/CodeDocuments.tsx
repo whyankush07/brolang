@@ -103,19 +103,19 @@ chal_bhai (bhai_sun i = 0; i < x; i = i + 1) {
 }`,
     language: "javascript"
   },
-  {
-    title: "Arrays",
-    description: "Implement 1d, 2d and upto n-d arrays",
-    code: `bhai_sun arr = [1, 2, 3, 4, 5];
-bhai_sun arr2 = [[1, 2], [3, 4], [5, 6]];
+//   {
+//     title: "Arrays",
+//     description: "Implement 1d, 2d and upto n-d arrays",
+//     code: `bhai_sun arr = [1, 2, 3, 4, 5];
+// bhai_sun arr2 = [[1, 2], [3, 4], [5, 6]];
       
-bol_bhai(arr);
-bol_bhai(arr[1]);
+// bol_bhai(arr);
+// bol_bhai(arr[1]);
       
-shuru_kar(bhai_sun i = 0; i < 5; i = i + 1) {
-  bol_bhai(arr[i]);
-  bol_bhai(arr2[i]);
-}`,
-    language: "javascript"
-  },
+// shuru_kar(bhai_sun i = 0; i < 5; i = i + 1) {
+//   bol_bhai(arr[i]);
+//   bol_bhai(arr2[i]);
+// }`,
+//     language: "javascript"
+//   },
 ];

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import CodeBlock from './CodeBlock';
 import { CodeSnippet as CodeSnippetType } from './CodeDocuments' ;
@@ -7,14 +7,14 @@ interface DocSectionProps extends CodeSnippetType {
     className?: string;
 }
 
-const fadeIn = {
+const fadeIn: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
         opacity: 1,
         y: 0,
         transition: {
             duration: 0.6,
-            ease: 'easeOut'
+            ease: [0.4, 0, 0.2, 1] as any
         }
     }
 };

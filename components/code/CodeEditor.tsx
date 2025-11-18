@@ -2,6 +2,7 @@
 import { Editor } from '@monaco-editor/react';
 import { useCode } from '@/context/CodeContext';
 import { useTheme } from 'next-themes';
+import { getBrolangConfig } from '@/compiler/config/getBrolangConfig';
 
 declare global {
   interface Window {
@@ -16,18 +17,14 @@ export const CodeEditor = () => {
   const handleEditorMount = (editor: import('monaco-editor').editor.IStandaloneCodeEditor, monaco: typeof import('monaco-editor')) => {
     window.monaco = monaco;
 
+    const config = getBrolangConfig();
+
     monaco.languages.register({ id: 'brolang' });
 
     monaco.languages.setMonarchTokensProvider('brolang', {
       defaultToken: 'invalid',
 
-      keywords: [
-        'bhai_sun', 'bol_bhai', 'suna_bhai', 'agar', 'nahi_to',
-        'nahi_to_agar', 'jaha_tak', 'chal_bhai', 'sach',
-        'jhuth', 'bas_kar_bhai', 'aage_bhad_bhai', 'listen_bro',
-        'tell_bro', 'hear_bro', 'bro_if', 'bro_else', 'bro_else_if',
-        'bro_while', 'bro_for', 'bro_break', 'bro_continue', 'bro_true', 'bro_false'
-      ],
+      keywords: Object.keys(config.tokens.keywords),
 
       operators: [
         '=', '+', '-', '!', '*', '/', '%',
@@ -108,80 +105,12 @@ export const CodeEditor = () => {
           endColumn: word.endColumn
         };
         return {
-          suggestions: [
-            {
-              label: 'bhai_sun',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'bhai_sun',
-              range: range
-            },
-            {
-              label: 'bol_bhai',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'bol_bhai',
-              range: range
-            },
-            {
-              label: 'suna_bhai',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'suna_bhai',
-              range: range
-            },
-            {
-              label: 'agar',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'agar',
-              range: range
-            },
-            {
-              label: 'nahi_to',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'nahi_to',
-              range: range
-            },
-            {
-              label: 'nahi_to_agar',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'nahi_to_agar',
-              range: range
-            },
-            {
-              label: 'jaha_tak',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'jaha_tak',
-              range: range
-            },
-            {
-              label: 'chal_bhai',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'chal_bhai',
-              range: range
-            },
-            {
-              label: 'sach',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'sach',
-              range: range
-            },
-            {
-              label: 'jhuth',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'jhuth',
-              range: range
-            },
-            {
-              label: 'bas_kar_bhai',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'bas_kar_bhai',
-              range: range
-            },
-            {
-              label: 'aage_bhad_bhai',
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: 'aage_bhad_bhai',
-              range: range
-            }
-          ]
+          suggestions: Object.keys(config.tokens.keywords).map(keyword => ({
+            label: keyword,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: keyword,
+            range: range
+          }))
         };
       }
     });

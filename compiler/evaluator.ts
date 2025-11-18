@@ -41,8 +41,28 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return new obj.Integer(node.value);
   }
 
+  if (node.constructor.name === 'StringLiteral') {
+    return new obj.StringObj(node.value);
+  }
+
   if (node.constructor.name === 'BooleanLiteral') {
     return nativeBoolToBooleanObj(node.value);
+  }
+
+  if (node.constructor.name === 'ArrayLiteral') {
+    const elements = evalExpressions(node.elements, env);
+    if (elements.length === 1 && elements[0] instanceof obj.ErrorObj) {
+      return elements[0];
+    }
+    return new obj.ArrayObj(elements);
+  }
+
+  if (node.constructor.name === 'IndexExpression') {
+    const left = evaluate(node.left, env);
+    if (left instanceof obj.ErrorObj) return left;
+    const index = evaluate(node.index, env);
+    if (index instanceof obj.ErrorObj) return index;
+    return evalIndexExpression(left!, index!);
   }
 
   if (node.constructor.name === 'PrefixExpression') {
@@ -76,7 +96,11 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     if (isTruthy(condition)) {
       return evaluate(node.consequence, env);
     } else if (node.alternative) {
-      return evaluate(node.alternative, env);
+      if (node.alternative.constructor.name === 'IfExpression') {
+        return evaluate(node.alternative, env);
+      } else {
+        return evaluate(node.alternative, env);
+      }
     } else {
       return NULL;
     }
@@ -92,6 +116,80 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     const val = evaluate(node.value, env);
     if (val instanceof obj.ErrorObj) return val;
     env.set(node.name.value, val!);
+    return null;
+  }
+
+  if (node.constructor.name === 'AssignmentStatement') {
+    const val = evaluate(node.value, env);
+    if (val instanceof obj.ErrorObj) return val;
+    env.set(node.name.value, val!);
+    return null;
+  }
+
+  if (node.constructor.name === 'WhileStatement') {
+    let result: obj.BObject | null = null;
+    while (true) {
+      const condition = evaluate(node.condition, env);
+      if (condition instanceof obj.ErrorObj) return condition;
+      if (!isTruthy(condition)) break;
+      result = evaluate(node.body, env);
+      if (result instanceof obj.ReturnValue || result instanceof obj.ErrorObj) return result;
+      if (result instanceof obj.Break) break;
+      if (result instanceof obj.Continue) continue;
+    }
+    return result;
+  }
+
+  if (node.constructor.name === 'ForStatement') {
+    // Execute initialization
+    if (node.init) {
+      const initResult = evaluate(node.init, env);
+      if (initResult instanceof obj.ErrorObj) return initResult;
+    }
+    
+    let result: obj.BObject | null = null;
+    while (true) {
+      // Check condition
+      if (node.condition) {
+        const condition = evaluate(node.condition, env);
+        if (condition instanceof obj.ErrorObj) return condition;
+        if (!isTruthy(condition)) break;
+      }
+      
+      // Execute body
+      result = evaluate(node.body, env);
+      if (result instanceof obj.ReturnValue || result instanceof obj.ErrorObj) return result;
+      if (result instanceof obj.Break) break;
+      if (result instanceof obj.Continue) {
+        // Execute update before continuing
+        if (node.update) {
+          const updateResult = evaluate(node.update, env);
+          if (updateResult instanceof obj.ErrorObj) return updateResult;
+        }
+        continue;
+      }
+      
+      // Execute update
+      if (node.update) {
+        const updateResult = evaluate(node.update, env);
+        if (updateResult instanceof obj.ErrorObj) return updateResult;
+      }
+    }
+    return result;
+  }
+
+  if (node.constructor.name === 'BreakStatement') {
+    return new obj.Break();
+  }
+
+  if (node.constructor.name === 'ContinueStatement') {
+    return new obj.Continue();
+  }
+
+  if (node.constructor.name === 'PrintStatement') {
+    const val = evaluate(node.value, env);
+    if (val instanceof obj.ErrorObj) return val;
+    env.prints.push(val!.inspect());
     return null;
   }
 
@@ -148,8 +246,11 @@ function evalInfixExpression(operator: string, left: obj.BObject, right: obj.BOb
       case '-': return new obj.Integer(leftVal - rightVal);
       case '*': return new obj.Integer(leftVal * rightVal);
       case '/': return new obj.Integer(Math.floor(leftVal / rightVal));
+      case '%': return new obj.Integer(leftVal % rightVal);
       case '<': return nativeBoolToBooleanObj(leftVal < rightVal);
       case '>': return nativeBoolToBooleanObj(leftVal > rightVal);
+      case '<=': return nativeBoolToBooleanObj(leftVal <= rightVal);
+      case '>=': return nativeBoolToBooleanObj(leftVal >= rightVal);
       case '==': return nativeBoolToBooleanObj(leftVal === rightVal);
       case '!=': return nativeBoolToBooleanObj(leftVal !== rightVal);
     }
@@ -190,4 +291,34 @@ function applyFunction(fn: obj.BObject, args: obj.BObject[]): obj.BObject | obj.
   }
 
   return new obj.ErrorObj(errors.notAFunctionError(fn.type()));
+}
+
+function evalExpressions(exps: any[], env: Environment): obj.BObject[] {
+  const result: obj.BObject[] = [];
+  for (const e of exps) {
+    const evaluated = evaluate(e, env);
+    if (evaluated instanceof obj.ErrorObj) {
+      return [evaluated];
+    }
+    if (evaluated) result.push(evaluated);
+  }
+  return result;
+}
+
+function evalIndexExpression(left: obj.BObject, index: obj.BObject): obj.BObject | obj.ErrorObj {
+  if (left.type() === obj.ARRAY_OBJ && index.type() === obj.INTEGER_OBJ) {
+    return evalArrayIndexExpression(left as obj.ArrayObj, index as obj.Integer);
+  }
+  return new obj.ErrorObj(`Index operator not supported: ${left.type()}`);
+}
+
+function evalArrayIndexExpression(array: obj.ArrayObj, index: obj.Integer): obj.BObject | obj.ErrorObj {
+  const idx = index.value;
+  const max = array.elements.length - 1;
+  
+  if (idx < 0 || idx > max) {
+    return new obj.ErrorObj(`Aukaat m rehle aukaat m, ${idx} index pe kuch nahi hai! Bahar mat jaa array se!!`);
+  }
+  
+  return array.elements[idx];
 }

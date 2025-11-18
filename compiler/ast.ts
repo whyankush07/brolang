@@ -60,6 +60,82 @@ export class ReturnStatement implements Statement {
   }
 }
 
+export class WhileStatement implements Statement {
+  condition: Expression | null = null;
+  body: BlockStatement | null = null;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class BreakStatement implements Statement {
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class ContinueStatement implements Statement {
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class ForStatement implements Statement {
+  init: Statement | null = null;
+  condition: Expression | null = null;
+  update: Statement | null = null;
+  body: BlockStatement | null = null;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class PrintStatement implements Statement {
+  value: Expression | null = null;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class AssignmentStatement implements Statement {
+  name: Identifier;
+  value: Expression | null = null;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string, name: Identifier) {
+    this.tokenLiteralValue = tokenLiteral;
+    this.name = name;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
 export class ExpressionStatement implements Statement {
   expression: Expression | null = null;
   tokenLiteralValue: string;
@@ -85,12 +161,50 @@ export class IntegerLiteral implements Expression {
   }
 }
 
+export class StringLiteral implements Expression {
+  value: string;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string, value: string) {
+    this.tokenLiteralValue = tokenLiteral;
+    this.value = value;
+  }
+  expressionNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
 export class BooleanLiteral implements Expression {
   value: boolean;
   tokenLiteralValue: string;
   constructor(tokenLiteral: string, value: boolean) {
     this.tokenLiteralValue = tokenLiteral;
     this.value = value;
+  }
+  expressionNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class ArrayLiteral implements Expression {
+  elements: Expression[] = [];
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
+  }
+  expressionNode(): void {}
+  tokenLiteral(): string {
+    return this.tokenLiteralValue;
+  }
+}
+
+export class IndexExpression implements Expression {
+  left: Expression | null = null;
+  index: Expression | null = null;
+  tokenLiteralValue: string;
+  constructor(tokenLiteral: string) {
+    this.tokenLiteralValue = tokenLiteral;
   }
   expressionNode(): void {}
   tokenLiteral(): string {
@@ -130,7 +244,7 @@ export class InfixExpression implements Expression {
 export class IfExpression implements Expression {
   condition: Expression | null = null;
   consequence: BlockStatement | null = null;
-  alternative: BlockStatement | null = null;
+  alternative: BlockStatement | IfExpression | null = null;
   tokenLiteralValue: string;
   constructor(tokenLiteral: string) {
     this.tokenLiteralValue = tokenLiteral;

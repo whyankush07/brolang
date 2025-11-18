@@ -1,6 +1,7 @@
 import * as ast from "./ast";
 import * as obj from "./object";
 import { Environment, newEnclosedEnvironment } from "./environment";
+import * as errors from "./errors";
 
 const TRUE = new obj.BooleanObj(true);
 const FALSE = new obj.BooleanObj(false);
@@ -123,11 +124,11 @@ function evalPrefixExpression(operator: string, right: obj.BObject): obj.BObject
       return evalBangOperatorExpression(right);
     case '-':
       if (right.type() !== obj.INTEGER_OBJ) {
-        return new obj.ErrorObj(`unknown operator: -${right.type()}`);
+        return new obj.ErrorObj(errors.unknownPrefixOperatorError(operator, right.type()));
       }
       return new obj.Integer(-((right as obj.Integer).value));
     default:
-      return new obj.ErrorObj(`unknown operator: ${operator}${right.type()}`);
+      return new obj.ErrorObj(errors.unknownPrefixOperatorError(operator, right.type()));
   }
 }
 
@@ -158,10 +159,10 @@ function evalInfixExpression(operator: string, left: obj.BObject, right: obj.BOb
   if (operator === '!=') return nativeBoolToBooleanObj(left !== right);
 
   if (left.type() !== right.type()) {
-    return new obj.ErrorObj(`type mismatch: ${left.type()} ${operator} ${right.type()}`);
+    return new obj.ErrorObj(errors.typeMismatchError(left.type(), operator, right.type()));
   }
 
-  return new obj.ErrorObj(`unknown operator: ${left.type()} ${operator} ${right.type()}`);
+  return new obj.ErrorObj(errors.unknownInfixOperatorError(left.type(), operator, right.type()));
 }
 
 function isTruthy(objt: obj.BObject | null): boolean {
@@ -174,7 +175,7 @@ function isTruthy(objt: obj.BObject | null): boolean {
 function evalIdentifier(node: any, env: Environment): obj.BObject | obj.ErrorObj {
   const val = env.get(node.value);
   if (val !== undefined) return val;
-  return new obj.ErrorObj(`identifier not found: ${node.value}`);
+  return new obj.ErrorObj(errors.identifierNotFoundError(node.value));
 }
 
 function applyFunction(fn: obj.BObject, args: obj.BObject[]): obj.BObject | obj.ErrorObj {
@@ -188,5 +189,5 @@ function applyFunction(fn: obj.BObject, args: obj.BObject[]): obj.BObject | obj.
     return evaluated!;
   }
 
-  return new obj.ErrorObj(`not a function: ${fn.type()}`);
+  return new obj.ErrorObj(errors.notAFunctionError(fn.type()));
 }

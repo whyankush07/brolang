@@ -3,12 +3,11 @@ import { Parser } from "./parser";
 import { newEnvironment } from "./environment";
 import { evaluate } from "./evaluator";
 import * as ast from "./ast";
-import * as token from "./token";
 
 export interface CompilationResult {
   success: boolean;
   errors: string[];
-  output?: string; // inspected result of execution
+  output?: string;
   ast?: ast.Program;
 }
 

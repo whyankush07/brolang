@@ -1,6 +1,7 @@
 import { Lexer } from "./lexer";
 import * as token from "./token";
 import * as ast from "./ast";
+import * as errors from "./errors";
 
 type prefixParseFn = () => ast.Expression | null;
 type infixParseFn = (left: ast.Expression) => ast.Expression | null;
@@ -41,7 +42,6 @@ export class Parser {
     this.registerPrefix(token.MINUS, this.parsePrefixExpression.bind(this));
     this.registerPrefix(token.LPAREN, this.parseGroupedExpression.bind(this));
     this.registerPrefix(token.IF, this.parseIfExpression.bind(this));
-    this.registerPrefix(token.FUNCTION, this.parseFunctionLiteral.bind(this));
 
     this.registerInfix(token.PLUS, this.parseInfixExpression.bind(this));
     this.registerInfix(token.MINUS, this.parseInfixExpression.bind(this));
@@ -82,9 +82,6 @@ export class Parser {
   parseStatement(): ast.Statement | null {
     if (this.curToken.type === token.LET) {
       return this.parseLetStatement();
-    }
-    if (this.curToken.type === token.RETURN) {
-      return this.parseReturnStatement();
     }
     return this.parseExpressionStatement();
   }
@@ -147,7 +144,7 @@ export class Parser {
     const lit = new ast.IntegerLiteral(this.curToken.literal, 0);
     const val = parseInt(this.curToken.literal, 10);
     if (isNaN(val)) {
-      this.errors.push(`could not parse ${this.curToken.literal} as integer`);
+      this.errors.push(errors.parseIntegerError(this.curToken.literal));
       return null;
     }
     lit.value = val;
@@ -262,7 +259,7 @@ export class Parser {
   }
 
   private noPrefixParseFnError(t: string) {
-    this.errors.push(`no prefix parse function for ${t} found`);
+    this.errors.push(errors.noPrefixParseFnError(t));
   }
 
   private expectPeek(t: string): boolean {
@@ -275,7 +272,7 @@ export class Parser {
   }
 
   private peekError(t: string) {
-    this.errors.push(`expected next token to be ${t}, got ${this.peekToken.type} instead`);
+    this.errors.push(errors.expectedTokenError(t, this.peekToken.type));
   }
 
   private peekPrecedence(): number {

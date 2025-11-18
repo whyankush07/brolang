@@ -1,10 +1,10 @@
-import { Token, makeToken, EOF, ILLEGAL, IDENT, INT, ASSIGN, PLUS, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, FUNCTION, LET, BANG, MINUS, SLASH, ASTERISK, LT, GT, EQ, NOT_EQ, lookupIdent } from "./token";
+import { Token, makeToken, EOF, ILLEGAL, IDENT, INT, ASSIGN, PLUS, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, LET, BANG, MINUS, SLASH, ASTERISK, LT, GT, EQ, NOT_EQ, lookupIdent } from "./token";
 
 export class Lexer {
   private input: string;
-  private position = 0; // current position in input (points to current char)
-  private readPosition = 0; // current reading position in input (after current char)
-  private ch = ""; // current char under examination
+  private position = 0;
+  private readPosition = 0;
+  private ch = "";
 
   constructor(input: string) {
     this.input = input;

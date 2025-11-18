@@ -1,54 +1,25 @@
-// import { Object } from './object';
+import { BObject } from "./object";
 
-// export class Environment {
-//     private store: Map<string, Object>;
-//     public outer: Environment | null;
-//     public outputBuilder: StringBuilder;
+export class Environment {
+  store: Record<string, BObject> = {};
+  outer?: Environment;
+  constructor(outer?: Environment) { this.outer = outer; }
+  get(name: string): BObject | undefined {
+    const obj = this.store[name];
+    if (obj === undefined && this.outer) return this.outer.get(name);
+    return obj;
+  }
+  set(name: string, val: BObject): BObject {
+    this.store[name] = val;
+    return val;
+  }
+}
 
-//     constructor() {
-//         this.store = new Map<string, Object>();
-//         this.outer = null;
-//         this.outputBuilder = new StringBuilder();
-//     }
+export function newEnvironment(): Environment {
+  return new Environment();
+}
 
-//     static newEnvironment(): Environment {
-//         return new Environment();
-//     }
-
-//     static newEnclosedEnvironment(outer: Environment): Environment {
-//         const env = Environment.newEnvironment();
-//         env.outer = outer;
-//         return env;
-//     }
-
-//     get(name: string): [Object | null, boolean] {
-//         const obj = this.store.get(name);
-//         if (!obj && this.outer) {
-//             console.log(`Variable not found: ${name}`);
-//             return this.outer.get(name);
-//         }
-//         return [obj || null, !!obj];
-//     }
-
-//     set(name: string, val: Object): Object {
-//         console.log(`Setting variable: ${name} = ${val.inspect()}`);
-//         this.store.set(name, val);
-//         return val;
-//     }
-
-//     extend(): Environment {
-//         return new Environment();
-//     }
-// }
-
-// class StringBuilder {
-//     private _stringArray: string[] = [];
-
-//     append(str: string) {
-//         this._stringArray.push(str);
-//     }
-
-//     toString() {
-//         return this._stringArray.join('');
-//     }
-// }
+export function newEnclosedEnvironment(outer: Environment): Environment {
+  const env = new Environment(outer);
+  return env;
+}

@@ -1,7 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 
 module.exports = {
-    siteUrl: 'https://brolang.ankushsingh.tech',
+    siteUrl: 'https://brolang.whyankush.wtf',
     generateRobotsTxt: true,
     changefreq: 'daily',
     priority: 0.7,

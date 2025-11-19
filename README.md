@@ -1,4 +1,4 @@
-<a href="https://brolang.ankushsingh.tech">
+<a href="https://brolang.whyankush.wtf">
 <div align="center">
 <img src = "/public/landing.png">
 </div>
@@ -15,7 +15,7 @@
 
 ## 🚀 Getting Started
 
-You can get started with BROLANG by visiting [brolang.ankushsingh.tech](https://brolang.ankushsingh.tech)
+You can get started with BROLANG by visiting [brolang.whyankush.wtf](https://brolang.whyankush.wtf)
 
 - To set up locally, you can clone the repository and run the following commands:
 
@@ -37,7 +37,7 @@ go run main.go
 
 ## 📚 Documentation
 
-- To try out BROLANG, you can visit [docs](https://brolang.ankushsingh.tech/docs) page for docs available in both Hindi and English.
+- To try out BROLANG, you can visit [docs](https://brolang.whyankush.wtf/docs) page for docs available in both Hindi and English.
 
 <div align="center">
 <img src = "/public/docs.png">

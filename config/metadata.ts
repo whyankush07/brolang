@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 export const siteConfig = {
     name: "Brolang - A fun programming language for all brothers!",
     description: "A fun programming language written in Golang made for fun by Ankush.",
-    url: "https://brolang.ankushsingh.tech",
-    ogImage: "https://brolang.ankushsingh.tech/landing.png",
-    profileImage: "https://brolang.ankushsingh.tech/favicon-32x32.png",
+    url: "https://brolang.whyankush.wtf",
+    ogImage: "https://brolang.whyankush.wtf/landing.png",
+    profileImage: "https://brolang.whyankush.wtf/favicon-32x32.png",
     twitter: "@whyankush07",
     themeColor: "#FDFDF9"
 };

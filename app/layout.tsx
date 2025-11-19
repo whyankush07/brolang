@@ -31,22 +31,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <CustomHead />
       </head>
       <body
-        suppressHydrationWarning={true}
         className={cn(
-          'font-satoshi antialiased bg-[#FDFDF9] dark:bg-[#3e3e3e]',
+          'font-satoshi antialiased',
           satoshi.variable
         )}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem
-          disableTransitionOnChange >
+          disableTransitionOnChange
+        >
           <CodeProvider>
             <ScrollBarProps >
               <NextTopLoader

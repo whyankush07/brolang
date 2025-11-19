@@ -2,7 +2,6 @@ import { BrolangConfig } from './config/defaultConfig';
 
 export type ErrorType = string;
 
-// Error constants
 export const PARSE_INTEGER_ERROR: ErrorType = "PARSE_INTEGER_ERROR";
 export const NO_PREFIX_PARSE_FN_ERROR: ErrorType = "NO_PREFIX_PARSE_FN_ERROR";
 export const EXPECTED_TOKEN_ERROR: ErrorType = "EXPECTED_TOKEN_ERROR";
@@ -12,7 +11,6 @@ export const TYPE_MISMATCH_ERROR: ErrorType = "TYPE_MISMATCH_ERROR";
 export const IDENTIFIER_NOT_FOUND_ERROR: ErrorType = "IDENTIFIER_NOT_FOUND_ERROR";
 export const NOT_A_FUNCTION_ERROR: ErrorType = "NOT_A_FUNCTION_ERROR";
 
-// Error message templates with Hindi flavor
 const defaultErrorMessages: Record<ErrorType, string> = {
   [PARSE_INTEGER_ERROR]: "Arre bhai, ye number nahi hai: '{literal}' - kya kar raha hai tu?",
   [NO_PREFIX_PARSE_FN_ERROR]: "Bhai, is '{token}' ke liye koi parse function nahi mila - galat syntax hai!",
@@ -24,7 +22,6 @@ const defaultErrorMessages: Record<ErrorType, string> = {
   [NOT_A_FUNCTION_ERROR]: "Not a function: {type} - ye function nahi hai, call kaise karoge?",
 };
 
-// Function to get error message with replacements
 export function getErrorMessage(errorType: ErrorType, replacements: Record<string, string> = {}, config?: BrolangConfig): string {
   const messages = config ? { ...defaultErrorMessages, ...config.errors.messages } : defaultErrorMessages;
   let message = messages[errorType];
@@ -32,7 +29,6 @@ export function getErrorMessage(errorType: ErrorType, replacements: Record<strin
     return `Unknown error type: ${errorType}`;
   }
 
-  // Replace placeholders with actual values
   for (const [key, value] of Object.entries(replacements)) {
     message = message.replace(new RegExp(`{${key}}`, 'g'), value);
   }
@@ -40,7 +36,6 @@ export function getErrorMessage(errorType: ErrorType, replacements: Record<strin
   return message;
 }
 
-// Helper functions for specific error types
 export function parseIntegerError(literal: string, config?: BrolangConfig): string {
   return getErrorMessage(PARSE_INTEGER_ERROR, { literal }, config);
 }

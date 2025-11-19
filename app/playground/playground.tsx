@@ -1,5 +1,4 @@
 'use client';
-import { CodeProvider } from '@/context/CodeContext';
 import { CodeEditor } from '@/components/code/CodeEditor';
 import { ResponsePanel } from '@/components/code/ResponsePanel';
 import { SubmitButton } from '@/components/code/Submitbutton';
@@ -43,13 +42,12 @@ export default function CodePlaygroundPage() {
   };
 
   return (
-    <CodeProvider>
-      <motion.div
-        className="min-h-screen bg-[#FDFDF9] dark:bg-[#060606] pt-20"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
+    <motion.div
+      className="min-h-screen bg-[#FDFDF9] dark:bg-[#060606] pt-20"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
         <main className="container mx-auto px-4 py-8">
           <div className="space-y-6">
             <motion.div variants={titleVariants}>
@@ -106,6 +104,5 @@ export default function CodePlaygroundPage() {
           </div>
         </main>
       </motion.div>
-    </CodeProvider>
   );
 }

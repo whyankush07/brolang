@@ -362,10 +362,10 @@ export class Parser {
         expression.alternative = elseIf;
       } else {
         let current: ast.IfExpression | ast.BlockStatement | null = expression.alternative;
-        while (current && current.constructor.name === 'IfExpression' && (current as ast.IfExpression).alternative) {
+        while (current && current instanceof ast.IfExpression && (current as ast.IfExpression).alternative) {
           current = (current as ast.IfExpression).alternative;
         }
-        if (current && current.constructor.name === 'IfExpression') {
+        if (current && current instanceof ast.IfExpression) {
           (current as ast.IfExpression).alternative = elseIf;
         }
       }

@@ -29,27 +29,27 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
   if (!node) return null;
 
   // Statements
-  if (node.constructor.name === 'Program') {
+  if (node instanceof ast.Program) {
     return evalProgram(node as ast.Program, env);
   }
 
-  if (node.constructor.name === 'ExpressionStatement') {
+  if (node instanceof ast.ExpressionStatement) {
     return evaluate(node.expression, env);
   }
 
-  if (node.constructor.name === 'IntegerLiteral') {
+  if (node instanceof ast.IntegerLiteral) {
     return new obj.Integer(node.value);
   }
 
-  if (node.constructor.name === 'StringLiteral') {
+  if (node instanceof ast.StringLiteral) {
     return new obj.StringObj(node.value);
   }
 
-  if (node.constructor.name === 'BooleanLiteral') {
+  if (node instanceof ast.BooleanLiteral) {
     return nativeBoolToBooleanObj(node.value);
   }
 
-  if (node.constructor.name === 'ArrayLiteral') {
+  if (node instanceof ast.ArrayLiteral) {
     const elements = evalExpressions(node.elements, env);
     if (elements.length === 1 && elements[0] instanceof obj.ErrorObj) {
       return elements[0];
@@ -57,7 +57,7 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return new obj.ArrayObj(elements);
   }
 
-  if (node.constructor.name === 'IndexExpression') {
+  if (node instanceof ast.IndexExpression) {
     const left = evaluate(node.left, env);
     if (left instanceof obj.ErrorObj) return left;
     const index = evaluate(node.index, env);
@@ -65,13 +65,13 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return evalIndexExpression(left!, index!);
   }
 
-  if (node.constructor.name === 'PrefixExpression') {
+  if (node instanceof ast.PrefixExpression) {
     const right = evaluate(node.right, env);
     if (right instanceof obj.ErrorObj) return right;
     return evalPrefixExpression(node.operator, right!);
   }
 
-  if (node.constructor.name === 'InfixExpression') {
+  if (node instanceof ast.InfixExpression) {
     const left = evaluate(node.left, env);
     if (left instanceof obj.ErrorObj) return left;
     const right = evaluate(node.right, env);
@@ -79,7 +79,7 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return evalInfixExpression(node.operator, left!, right!);
   }
 
-  if (node.constructor.name === 'BlockStatement') {
+  if (node instanceof ast.BlockStatement) {
     let result: obj.BObject | null = null;
     for (const stmt of node.statements) {
       result = evaluate(stmt, env);
@@ -90,13 +90,13 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return result;
   }
 
-  if (node.constructor.name === 'IfExpression') {
+  if (node instanceof ast.IfExpression) {
     const condition = evaluate(node.condition, env);
     if (condition instanceof obj.ErrorObj) return condition;
     if (isTruthy(condition)) {
       return evaluate(node.consequence, env);
     } else if (node.alternative) {
-      if (node.alternative.constructor.name === 'IfExpression') {
+      if (node.alternative instanceof ast.IfExpression) {
         return evaluate(node.alternative, env);
       } else {
         return evaluate(node.alternative, env);
@@ -106,27 +106,27 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     }
   }
 
-  if (node.constructor.name === 'ReturnStatement') {
+  if (node instanceof ast.ReturnStatement) {
     const val = evaluate(node.returnValue, env);
     if (val instanceof obj.ErrorObj) return val;
     return new obj.ReturnValue(val!);
   }
 
-  if (node.constructor.name === 'LetStatement') {
+  if (node instanceof ast.LetStatement) {
     const val = evaluate(node.value, env);
     if (val instanceof obj.ErrorObj) return val;
     env.set(node.name.value, val!);
     return null;
   }
 
-  if (node.constructor.name === 'AssignmentStatement') {
+  if (node instanceof ast.AssignmentStatement) {
     const val = evaluate(node.value, env);
     if (val instanceof obj.ErrorObj) return val;
     env.set(node.name.value, val!);
     return null;
   }
 
-  if (node.constructor.name === 'WhileStatement') {
+  if (node instanceof ast.WhileStatement) {
     let result: obj.BObject | null = null;
     while (true) {
       const condition = evaluate(node.condition, env);
@@ -140,7 +140,7 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return result;
   }
 
-  if (node.constructor.name === 'ForStatement') {
+  if (node instanceof ast.ForStatement) {
     // Execute initialization
     if (node.init) {
       const initResult = evaluate(node.init, env);
@@ -178,30 +178,30 @@ export function evaluate(node: any, env: Environment): obj.BObject | null {
     return result;
   }
 
-  if (node.constructor.name === 'BreakStatement') {
+  if (node instanceof ast.BreakStatement) {
     return new obj.Break();
   }
 
-  if (node.constructor.name === 'ContinueStatement') {
+  if (node instanceof ast.ContinueStatement) {
     return new obj.Continue();
   }
 
-  if (node.constructor.name === 'PrintStatement') {
+  if (node instanceof ast.PrintStatement) {
     const val = evaluate(node.value, env);
     if (val instanceof obj.ErrorObj) return val;
     env.prints.push(val!.inspect());
     return null;
   }
 
-  if (node.constructor.name === 'Identifier') {
+  if (node instanceof ast.Identifier) {
     return evalIdentifier(node, env);
   }
 
-  if (node.constructor.name === 'FunctionLiteral') {
+  if (node instanceof ast.FunctionLiteral) {
     return new obj.FunctionObj(node.parameters, node.body, env);
   }
 
-  if (node.constructor.name === 'CallExpression') {
+  if (node instanceof ast.CallExpression) {
     const fn = evaluate(node.fn, env);
     if (fn instanceof obj.ErrorObj) return fn;
     const args: obj.BObject[] = [];

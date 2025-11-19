@@ -34,12 +34,12 @@ export function CodeProvider({ children }: { children: React.ReactNode }) {
                 }));
             }
         } catch (error) {
+            console.error('Error in submitCode:', error);
             setCodeState(prev => ({
                 ...prev,
-                response: 'Error executing code. Please try again.',
+                response: `Error executing code: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 isLoading: false,
             }));
-            console.error(error);
         }
     };
 
@@ -58,17 +58,6 @@ export const useCode = () => {
     return context;
 };
 
-const englishCode = `listen_bro x = 10;
-
-bro_while (x > 0) {
-  x = x - 1;
-  bro_if (x == 4) {
-    bro_break;
-  } bro_else_if (x == 7) {
-    bro_continue;
-  }
-  tell_bro(x);
-}`
 
 const hindiCode = `bhai_sun x = 10;
 

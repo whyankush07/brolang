@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Keyboard, AlertCircle, ChevronDown, ChevronUp, Save, RotateCcw, X, LucideIcon } from 'lucide-react';
 
 interface Keywords {
@@ -103,11 +102,9 @@ interface SectionHeaderProps {
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ icon: Icon, title, section, onClick, isExpanded }) => (
-  <motion.div
+  <div
     className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-colors"
     onClick={onClick}
-    whileHover={{ scale: 1.01 }}
-    whileTap={{ scale: 0.99 }}
   >
     <div className="flex items-center gap-3">
       <Icon className="w-5 h-5 text-indigo-600" />
@@ -118,7 +115,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ icon: Icon, title, sectio
     ) : (
       <ChevronDown className="w-5 h-5 text-gray-600" />
     )}
-  </motion.div>
+  </div>
 );
 
 export default function SyntaxEditor() {
@@ -224,21 +221,13 @@ export default function SyntaxEditor() {
               onClick={() => toggleSection('keywords')}
               isExpanded={expandedSections.keywords}
             />
-            <AnimatePresence>
-              {expandedSections.keywords && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+            {expandedSections.precedences && (
+                <div
                   className="overflow-hidden"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white rounded-lg mt-2 border">
                     {Object.entries(config.tokens.keywords).map(([key, value]) => (
-                      <motion.div
-                        key={key}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                      <div
                         className="space-y-2"
                       >
                         <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
@@ -259,12 +248,11 @@ export default function SyntaxEditor() {
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateKeyword(key, key, e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
 
           {/* Operator Precedences */}
@@ -276,21 +264,13 @@ export default function SyntaxEditor() {
               onClick={() => toggleSection('precedences')}
               isExpanded={expandedSections.precedences}
             />
-            <AnimatePresence>
-              {expandedSections.precedences && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+            {expandedSections.precedences && (
+                <div
                   className="overflow-hidden"
                 >
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-white rounded-lg mt-2 border">
                     {Object.entries(config.syntax.precedences).map(([op, prec]) => (
-                      <motion.div
-                        key={op}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                      <div
                         className="space-y-2"
                       >
                         <label className="text-sm font-semibold text-gray-700 block text-center">
@@ -302,12 +282,11 @@ export default function SyntaxEditor() {
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePrecedence(op, e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
 
           {/* Error Messages */}
@@ -319,21 +298,13 @@ export default function SyntaxEditor() {
               onClick={() => toggleSection('errors')}
               isExpanded={expandedSections.errors}
             />
-            <AnimatePresence>
-              {expandedSections.errors && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+            {expandedSections.errors && (
+                <div
                   className="overflow-hidden"
                 >
                   <div className="space-y-4 p-4 bg-white rounded-lg mt-2 border">
                     {Object.entries(config.errors.messages).map(([key, message]) => (
-                      <motion.div
-                        key={key}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
+                      <div
                         className="space-y-2"
                       >
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -347,12 +318,11 @@ export default function SyntaxEditor() {
                           rows={2}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
                         />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
         </div>
 

@@ -66,7 +66,7 @@ bro_while(i < 10){
     },
     {
         title: "For Loop",
-        description: "Use for loop with 'shuru_kar' keyword",
+        description: "Use for loop with 'chal_bhai' keyword",
         code: `bro_for(listen_bro i = 0; i < 10; i = i + 1) {
   tell_bro(i);
 }

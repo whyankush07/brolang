@@ -66,8 +66,8 @@ jaha_tak(i < 10){
   },
   {
     title: "For Loop",
-    description: "Use for loop with 'shuru_kar' keyword",
-    code: `shuru_kar(bhai_sun i = 0; i < 10; i = i + 1) {
+    description: "Use for loop with 'chal_bhai' keyword",
+    code: `chal_bhai(bhai_sun i = 0; i < 10; i = i + 1) {
   bol_bhai(i);
 }
 
@@ -112,7 +112,7 @@ chal_bhai (bhai_sun i = 0; i < x; i = i + 1) {
 // bol_bhai(arr);
 // bol_bhai(arr[1]);
       
-// shuru_kar(bhai_sun i = 0; i < 5; i = i + 1) {
+// chal_bhai(bhai_sun i = 0; i < 5; i = i + 1) {
 //   bol_bhai(arr[i]);
 //   bol_bhai(arr2[i]);
 // }`,

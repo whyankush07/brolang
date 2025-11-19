@@ -2,7 +2,7 @@
 import { Editor } from '@monaco-editor/react';
 import { useCode } from '@/context/CodeContext';
 import { useTheme } from 'next-themes';
-import { getBrolangConfig } from '@/compiler/config/getBrolangConfig';
+import { getBrolangConfig } from '@/brolang-compiler/config/getBrolangConfig';
 
 declare global {
   interface Window {

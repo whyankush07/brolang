@@ -2,7 +2,7 @@
 import { CodeState, CodeContextType } from '@/types/code';
 
 import React, { createContext, useContext, useState } from 'react';
-import { compileBrolang } from '@/compiler';
+import { compileBrolang } from '@/brolang-compiler';
 const CodeContext = createContext<CodeContextType | undefined>(undefined);
 
 export function CodeProvider({ children }: { children: React.ReactNode }) {

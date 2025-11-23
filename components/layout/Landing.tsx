@@ -31,7 +31,7 @@ export default function LandingPage() {
                         className="relative inline-flex items-center px-4 py-2 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-800 mb-8 shadow-[0_10px_20px_rgba(240,_46,_170,_0.7)]"
                     >
                         <span className="text-sm">✨ Introducing Brolang</span>
-                        <span className="absolute -right-6 -top-4 rounded-full px-2 bg-[#fcff3d] text-black">Beta</span>
+                        <span className="absolute -right-6 -top-4 rounded-full px-2 bg-[#fcff3d] text-black">v2</span>
                     </motion.div>
 
                     <motion.h1 

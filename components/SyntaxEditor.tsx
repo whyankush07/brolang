@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Settings, Keyboard, AlertCircle, ChevronDown, ChevronUp, Save, RotateCcw, X, LucideIcon } from 'lucide-react';
+import { Settings, Keyboard, AlertCircle, ChevronDown, ChevronUp, Save, RotateCcw, X } from 'lucide-react';
 
 interface Keywords {
   [key: string]: string;
@@ -93,35 +93,28 @@ const defaultConfig: BrolangConfig = {
   }
 };
 
-interface SectionHeaderProps {
-  icon: LucideIcon;
-  title: string;
-  section: SectionKey;
-  onClick: () => void;
-  isExpanded: boolean;
-}
-
-const SectionHeader: React.FC<SectionHeaderProps> = ({ icon: Icon, title, section, onClick, isExpanded }) => (
-  <div
-    className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-colors"
+const SectionHeader = ({ icon: Icon, title, onClick, isExpanded }: { icon: React.ComponentType<{ className?: string }>, title: string, onClick: () => void, isExpanded: boolean }) => (
+  <button
+    type="button"
+    className="w-full flex items-center justify-between p-4 bg-[#3e3e3e]/5 dark:bg-[#FDFDF9]/5 rounded-lg hover:bg-[#3e3e3e]/10 dark:hover:bg-[#FDFDF9]/10 transition-colors"
     onClick={onClick}
   >
     <div className="flex items-center gap-3">
-      <Icon className="w-5 h-5 text-indigo-600" />
-      <h3 className="font-semibold text-gray-800">{title}</h3>
+      <Icon className="w-5 h-5 text-[#3e3e3e] dark:text-[#FDFDF9]" />
+      <h3 className="font-semibold text-[#3e3e3e] dark:text-[#FDFDF9]">{title}</h3>
     </div>
     {isExpanded ? (
-      <ChevronUp className="w-5 h-5 text-gray-600" />
+      <ChevronUp className="w-5 h-5 text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70" />
     ) : (
-      <ChevronDown className="w-5 h-5 text-gray-600" />
+      <ChevronDown className="w-5 h-5 text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70" />
     )}
-  </div>
+  </button>
 );
 
 export default function SyntaxEditor() {
-  const [config, setConfig] = useState<BrolangConfig>(defaultConfig);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
+  const [config, setConfig] = useState(defaultConfig);
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
     keywords: true,
     precedences: false,
     prefixTokens: false,
@@ -130,26 +123,24 @@ export default function SyntaxEditor() {
   });
 
   useEffect(() => {
-    if (isOpen) {
-      const stored = localStorage.getItem('brolangConfig');
-      if (stored) {
-        try {
-          const parsedConfig = JSON.parse(stored) as BrolangConfig;
-          setConfig(parsedConfig);
-        } catch {
-          setConfig(defaultConfig);
-        }
+    const stored = localStorage.getItem('brolangConfig');
+    if (stored) {
+      try {
+        const parsedConfig = JSON.parse(stored);
+        setConfig(parsedConfig);
+      } catch {
+        setConfig(defaultConfig);
       }
     }
-  }, [isOpen]);
+  }, []);
 
-  const toggleSection = (section: SectionKey): void => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
+    const toggleSection = (section: SectionKey) => {
+      setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+    };
 
-  const updateKeyword = (oldKey: string, newKey: string, value: string): void => {
+    const updateKeyword = (oldKey: string, newKey: string, value: string) => {
     setConfig(prev => {
-      const newKeywords: Keywords = { ...prev.tokens.keywords };
+      const newKeywords = { ...prev.tokens.keywords };
       if (oldKey !== newKey) {
         delete newKeywords[oldKey];
       }
@@ -161,7 +152,7 @@ export default function SyntaxEditor() {
     });
   };
 
-  const updatePrecedence = (operator: string, value: string): void => {
+  const updatePrecedence = (operator: string, value: string) => {
     setConfig(prev => ({
       ...prev,
       syntax: {
@@ -171,7 +162,7 @@ export default function SyntaxEditor() {
     }));
   };
 
-  const updateErrorMessage = (key: string, value: string): void => {
+  const updateErrorMessage = (key: string, value: string) => {
     setConfig(prev => ({
       ...prev,
       errors: {
@@ -181,35 +172,35 @@ export default function SyntaxEditor() {
     }));
   };
 
-  const handleSave = (): void => {
+  const handleSave = () => {
     localStorage.setItem('brolangConfig', JSON.stringify(config));
     setIsOpen(false);
     window.location.reload();
   };
 
-  const handleReset = (): void => {
+  const handleReset = () => {
     setConfig(defaultConfig);
     localStorage.setItem('brolangConfig', JSON.stringify(defaultConfig));
     window.location.reload();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
         <Button className="gap-2 bg-[#3e3e3e] hover:bg-[#2e2e2e] text-[#FDFDF9] dark:bg-[#FDFDF9] dark:text-[#3e3e3e] dark:hover:bg-[#ededde]">
           <Settings className="w-4 h-4" />
-          Customize Syntax & Errors
+          Customize Syntax
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-[#FDFDF9] dark:bg-[#3e3e3e]">
-        <DialogHeader className="p-6 pb-4 border-b border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10 bg-[#FDFDF9] dark:bg-[#3e3e3e]">
-          <DialogTitle className="text-2xl font-bold text-[#3e3e3e] dark:text-[#FDFDF9]">
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-hidden flex flex-col p-0 bg-[#FDFDF9] dark:bg-[#3e3e3e]">
+        <SheetHeader className="p-6 pb-4 border-b border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+          <SheetTitle className="text-2xl font-bold text-[#3e3e3e] dark:text-[#FDFDF9]">
             Brolang Configuration
-          </DialogTitle>
+          </SheetTitle>
           <p className="text-sm text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 mt-2">
-            Customize keywords, operators, and error messages for your Brolang compiler
+            Customize keywords, operators, and error messages
           </p>
-        </DialogHeader>
+        </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Keywords Section */}
@@ -217,42 +208,35 @@ export default function SyntaxEditor() {
             <SectionHeader 
               icon={Keyboard} 
               title="Keywords" 
-              section="keywords" 
               onClick={() => toggleSection('keywords')}
               isExpanded={expandedSections.keywords}
             />
-            {expandedSections.precedences && (
-                <div
-                  className="overflow-hidden"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white rounded-lg mt-2 border">
-                    {Object.entries(config.tokens.keywords).map(([key, value]) => (
-                      <div
-                        className="space-y-2"
-                      >
-                        <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                          Keyword
-                        </label>
-                        <input
-                          type="text"
-                          value={key}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateKeyword(key, e.target.value, value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        />
-                        <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                          Token Type
-                        </label>
-                        <input
-                          type="text"
-                          value={value}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateKeyword(key, key, e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        />
-                      </div>
-                    ))}
+            {expandedSections.keywords && (
+              <div className="grid grid-cols-1 gap-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                {Object.entries(config.tokens.keywords).map(([key, value]) => (
+                  <div key={key} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                    <label className="text-xs font-medium text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 uppercase tracking-wide">
+                      Keyword
+                    </label>
+                    <input
+                      type="text"
+                      value={key}
+                      onChange={(e) => updateKeyword(key, e.target.value, value)}
+                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all"
+                    />
+                    <label className="text-xs font-medium text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 uppercase tracking-wide">
+                      Token Type
+                    </label>
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={(e) => updateKeyword(key, key, e.target.value)}
+                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all"
+                    />
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Operator Precedences */}
@@ -260,33 +244,26 @@ export default function SyntaxEditor() {
             <SectionHeader 
               icon={Settings} 
               title="Operator Precedences" 
-              section="precedences"
               onClick={() => toggleSection('precedences')}
               isExpanded={expandedSections.precedences}
             />
             {expandedSections.precedences && (
-                <div
-                  className="overflow-hidden"
-                >
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-white rounded-lg mt-2 border">
-                    {Object.entries(config.syntax.precedences).map(([op, prec]) => (
-                      <div
-                        className="space-y-2"
-                      >
-                        <label className="text-sm font-semibold text-gray-700 block text-center">
-                          {op}
-                        </label>
-                        <input
-                          type="number"
-                          value={prec}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePrecedence(op, e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        />
-                      </div>
-                    ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                {Object.entries(config.syntax.precedences).map(([op, prec]) => (
+                  <div key={op} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                    <label className="text-sm font-semibold text-[#3e3e3e] dark:text-[#FDFDF9] block text-center">
+                      {op}
+                    </label>
+                    <input
+                      type="number"
+                      value={prec}
+                      onChange={(e) => updatePrecedence(op, e.target.value)}
+                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg text-center bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all"
+                    />
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Error Messages */}
@@ -294,44 +271,37 @@ export default function SyntaxEditor() {
             <SectionHeader 
               icon={AlertCircle} 
               title="Error Messages" 
-              section="errors"
               onClick={() => toggleSection('errors')}
               isExpanded={expandedSections.errors}
             />
             {expandedSections.errors && (
-                <div
-                  className="overflow-hidden"
-                >
-                  <div className="space-y-4 p-4 bg-white rounded-lg mt-2 border">
-                    {Object.entries(config.errors.messages).map(([key, message]) => (
-                      <div
-                        className="space-y-2"
-                      >
-                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-mono">
-                            {key}
-                          </span>
-                        </label>
-                        <textarea
-                          value={message}
-                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateErrorMessage(key, e.target.value)}
-                          rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
-                        />
-                      </div>
-                    ))}
+              <div className="space-y-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                {Object.entries(config.errors.messages).map(([key, message]) => (
+                  <div key={key} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                    <label className="text-sm font-medium text-[#3e3e3e] dark:text-[#FDFDF9] flex items-center gap-2">
+                      <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-xs font-mono">
+                        {key}
+                      </span>
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => updateErrorMessage(key, e.target.value)}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all resize-none"
+                    />
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 p-6 border-t border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10 bg-[#FDFDF9] dark:bg-[#2e2e2e]">
           <Button
             variant="outline"
             onClick={() => setIsOpen(false)}
-            className="gap-2"
+            className="gap-2 border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 text-[#3e3e3e] dark:text-[#FDFDF9] hover:bg-[#3e3e3e]/5 dark:hover:bg-[#FDFDF9]/5"
           >
             <X className="w-4 h-4" />
             Cancel
@@ -339,20 +309,20 @@ export default function SyntaxEditor() {
           <Button
             variant="outline"
             onClick={handleReset}
-            className="gap-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+            className="gap-2 border-orange-600 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
           >
             <RotateCcw className="w-4 h-4" />
             Reset to Default
           </Button>
           <Button
             onClick={handleSave}
-            className="gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700"
+            className="gap-2 bg-[#3e3e3e] hover:bg-[#2e2e2e] text-[#FDFDF9] dark:bg-[#FDFDF9] dark:text-[#3e3e3e] dark:hover:bg-[#ededde]"
           >
             <Save className="w-4 h-4" />
             Save Changes
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

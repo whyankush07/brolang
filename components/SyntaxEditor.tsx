@@ -1,15 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Settings, Keyboard, AlertCircle, ChevronDown, ChevronUp, Save, RotateCcw, X } from 'lucide-react';
 
 interface Keywords {
   [key: string]: string;
-}
-
-interface Precedences {
-  [key: string]: number;
 }
 
 interface ErrorMessages {
@@ -21,7 +17,7 @@ interface BrolangConfig {
     keywords: Keywords;
   };
   syntax: {
-    precedences: Precedences;
+    precedences: { [key: string]: number };
     prefixTokens: string[];
     infixTokens: string[];
   };
@@ -32,9 +28,6 @@ interface BrolangConfig {
 
 interface ExpandedSections {
   keywords: boolean;
-  precedences: boolean;
-  prefixTokens: boolean;
-  infixTokens: boolean;
   errors: boolean;
 }
 
@@ -116,9 +109,6 @@ export default function SyntaxEditor() {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     keywords: true,
-    precedences: false,
-    prefixTokens: false,
-    infixTokens: false,
     errors: false
   });
 
@@ -134,11 +124,11 @@ export default function SyntaxEditor() {
     }
   }, []);
 
-    const toggleSection = (section: SectionKey) => {
-      setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
+  const toggleSection = useCallback((section: SectionKey) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  }, []);
 
-    const updateKeyword = (oldKey: string, newKey: string, value: string) => {
+  const updateKeyword = useCallback((oldKey: string, newKey: string, value: string) => {
     setConfig(prev => {
       const newKeywords = { ...prev.tokens.keywords };
       if (oldKey !== newKey) {
@@ -150,19 +140,9 @@ export default function SyntaxEditor() {
         tokens: { ...prev.tokens, keywords: newKeywords }
       };
     });
-  };
+  }, []);
 
-  const updatePrecedence = (operator: string, value: string) => {
-    setConfig(prev => ({
-      ...prev,
-      syntax: {
-        ...prev.syntax,
-        precedences: { ...prev.syntax.precedences, [operator]: parseInt(value) || 0 }
-      }
-    }));
-  };
-
-  const updateErrorMessage = (key: string, value: string) => {
+  const updateErrorMessage = useCallback((key: string, value: string) => {
     setConfig(prev => ({
       ...prev,
       errors: {
@@ -170,25 +150,24 @@ export default function SyntaxEditor() {
         messages: { ...prev.errors.messages, [key]: value }
       }
     }));
-  };
+  }, []);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     localStorage.setItem('brolangConfig', JSON.stringify(config));
     setIsOpen(false);
     window.location.reload();
-  };
+  }, [config]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setConfig(defaultConfig);
     localStorage.setItem('brolangConfig', JSON.stringify(defaultConfig));
     window.location.reload();
-  };
+  }, []);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button className="gap-2 bg-[#3e3e3e] hover:bg-[#2e2e2e] text-[#FDFDF9] dark:bg-[#FDFDF9] dark:text-[#3e3e3e] dark:hover:bg-[#ededde]">
-          <Settings className="w-4 h-4" />
           Customize Syntax
         </Button>
       </SheetTrigger>
@@ -198,23 +177,23 @@ export default function SyntaxEditor() {
             Brolang Configuration
           </SheetTitle>
           <p className="text-sm text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 mt-2">
-            Customize keywords, operators, and error messages
+            Customize keywords and error messages
           </p>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Keywords Section */}
           <div>
-            <SectionHeader 
-              icon={Keyboard} 
-              title="Keywords" 
+            <SectionHeader
+              icon={Keyboard}
+              title="Keywords"
               onClick={() => toggleSection('keywords')}
               isExpanded={expandedSections.keywords}
             />
             {expandedSections.keywords && (
               <div className="grid grid-cols-1 gap-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
-                {Object.entries(config.tokens.keywords).map(([key, value]) => (
-                  <div key={key} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                {Object.entries(config.tokens.keywords).sort(([a], [b]) => a.localeCompare(b)).map(([key, value], index) => (
+                  <div key={index} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
                     <label className="text-xs font-medium text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 uppercase tracking-wide">
                       Keyword
                     </label>
@@ -230,35 +209,8 @@ export default function SyntaxEditor() {
                     <input
                       type="text"
                       value={value}
-                      onChange={(e) => updateKeyword(key, key, e.target.value)}
-                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Operator Precedences */}
-          <div>
-            <SectionHeader 
-              icon={Settings} 
-              title="Operator Precedences" 
-              onClick={() => toggleSection('precedences')}
-              isExpanded={expandedSections.precedences}
-            />
-            {expandedSections.precedences && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
-                {Object.entries(config.syntax.precedences).map(([op, prec]) => (
-                  <div key={op} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
-                    <label className="text-sm font-semibold text-[#3e3e3e] dark:text-[#FDFDF9] block text-center">
-                      {op}
-                    </label>
-                    <input
-                      type="number"
-                      value={prec}
-                      onChange={(e) => updatePrecedence(op, e.target.value)}
-                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg text-center bg-[#FDFDF9] dark:bg-[#2e2e2e] text-[#3e3e3e] dark:text-[#FDFDF9] focus:ring-2 focus:ring-[#3e3e3e] dark:focus:ring-[#FDFDF9] focus:border-transparent transition-all"
+                      readOnly
+                      className="w-full px-3 py-2 border border-[#3e3e3e]/20 dark:border-[#FDFDF9]/20 rounded-lg bg-[#FDFDF9]/50 dark:bg-[#2e2e2e]/50 text-[#3e3e3e]/70 dark:text-[#FDFDF9]/70 cursor-not-allowed transition-all"
                     />
                   </div>
                 ))}
@@ -268,16 +220,16 @@ export default function SyntaxEditor() {
 
           {/* Error Messages */}
           <div>
-            <SectionHeader 
-              icon={AlertCircle} 
-              title="Error Messages" 
+            <SectionHeader
+              icon={AlertCircle}
+              title="Error Messages"
               onClick={() => toggleSection('errors')}
               isExpanded={expandedSections.errors}
             />
             {expandedSections.errors && (
               <div className="space-y-4 p-4 bg-[#FDFDF9] dark:bg-[#2e2e2e] rounded-lg mt-2 border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
-                {Object.entries(config.errors.messages).map(([key, message]) => (
-                  <div key={key} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
+                {Object.entries(config.errors.messages).map(([key, message], index) => (
+                  <div key={index} className="space-y-2 p-3 bg-white dark:bg-[#3e3e3e] rounded-lg border border-[#3e3e3e]/10 dark:border-[#FDFDF9]/10">
                     <label className="text-sm font-medium text-[#3e3e3e] dark:text-[#FDFDF9] flex items-center gap-2">
                       <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-xs font-mono">
                         {key}

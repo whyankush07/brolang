@@ -62,7 +62,7 @@ export default function SignInWithCredentials() {
                 setError((res as any).error || 'Sign in failed');
             } else {
                 toast.success('Signed in successfully!');
-                router.replace('/chat');
+                router.replace('/playground');
             }
         } catch (err: any) {
             setError(err?.message || 'Sign in error');

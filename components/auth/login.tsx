@@ -31,7 +31,7 @@ export default function LoginPage() {
           </div>
 
           <h2 className="text-3xl font-bold text-foreground text-center mb-4">
-            {siteConfig.description}
+            {siteConfig.short_description}
           </h2>
         </div>
       </div>

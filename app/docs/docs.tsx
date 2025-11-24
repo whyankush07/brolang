@@ -3,8 +3,6 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import DocumentationGrid from './docsComponents/DocsGrid';
 import { documentationSections } from './docsComponents/CodeDocuments';
-import { useCode } from '@/context/CodeContext';
-import { EnglishDocuments } from './docsComponents/EnglishDocuments';
 
 
 export default function DocumentationPage() {

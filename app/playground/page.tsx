@@ -1,26 +1,22 @@
 import { Metadata } from "next";
 import CodePlaygroundPage from "./playground";
-import Head from "next/head";
-import siteConfig from "@/config/metadata";
 
 export const metadata = {
-  title: "Playgroung",
-  description: "Have fun with Brolang",
+  title: "Brolang Playground - Interactive Code Editor | Brolang",
+  description: "Try Brolang online with our interactive playground. Write, test, and experiment with Brolang code directly in your browser.",
+  keywords: ["brolang", "playground", "code editor", "interactive", "online compiler"],
+  openGraph: {
+    title: "Brolang Playground - Interactive Code Editor",
+    description: "Try Brolang online with our interactive playground. Write, test, and experiment with Brolang code directly in your browser.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Brolang Playground - Interactive Code Editor",
+    description: "Try Brolang online with our interactive playground. Write, test, and experiment with Brolang code directly in your browser.",
+  },
 } satisfies Metadata;
 
 export default function Page() {
-  return (
-    <div>
-      <Head>
-        <title>{siteConfig.name}</title>
-        <meta property="og:title" content={siteConfig.name} key="title" />
-        <meta property="og:type" content="website" key="type" />
-        <meta property="og:url" content={siteConfig.url} key="url" />
-        <meta property="og:description" content={siteConfig.description} key="description" />
-        <meta name="description" content={siteConfig.description} />
-        <meta property="og:site_name" content="Brolang" key="siteName" />
-      </Head>
-      <CodePlaygroundPage />
-    </div>
-  )
+  return <CodePlaygroundPage />
 }

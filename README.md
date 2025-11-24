@@ -20,7 +20,7 @@ You can get started with BROLANG by visiting [brolang.whyankush.wtf](https://bro
 - To set up locally, you can clone the repository and run the following commands:
 
 ```bash
-git clone https://github.com/ankush-web-eng/brolangf
+git clone https://github.com/ankush-web-eng/brolang
 npm install -g yarn
 yarn install
 yarn dev

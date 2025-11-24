@@ -2,21 +2,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-// import { Bug } from 'lucide-react';
-// import { RxCross2 } from "react-icons/rx";
+import { Bug } from 'lucide-react';
+import { RxCross2 } from "react-icons/rx";
 import { ModeToggle } from '@/components/ui/Themetoggle';
-// import BugReport from '@/components/code/BugReport';
+import BugReport from '@/components/code/BugReport';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
-    // const [isBugOpen, setIsBugOpen] = useState(false);
+    const [isBugOpen, setIsBugOpen] = useState(false);
 
     const navItems = [
         { name: 'Docs', href: '/docs', isNew: false },
         { name: 'Twitter', target: "_blank", href: 'https://x.com/whyankush07' },
-        { name: 'Github', target: "_blank", href: 'https://github.com/ankush-web-eng/brolangf' }
+        { name: 'Github', target: "_blank", href: 'https://github.com/whyankush07/brolang' }
     ];
 
     return (
@@ -49,17 +49,17 @@ const Header = () => {
                     <div className="flex items-center space-x-4">
                         <ModeToggle />
 
-                        {/* <motion.div
+                        <motion.div
                             whileHover={{ scale: 1.1 }}
                             className="relative cursor-pointer"
                         >
                             {!isBugOpen && <Bug size={20} onClick={() => setIsBugOpen(true)} className="w-6 h-6 text-neutral-500 dark:text-neutral-300" />}
                             {isBugOpen && <RxCross2 onClick={() => setIsBugOpen(false)} />}
-                            {!isBugOpen && <span className="absolute -bottom-6 -right-6 px-2 py-0.5 text-xs bg-gray-800 text-white rounded opacity-0 hover:opacity-100">
+                            {/* {!isBugOpen && <span className="absolute -bottom-6 -right-6 px-2 py-0.5 text-xs bg-gray-800 text-white rounded opacity-0 hover:opacity-100">
                                 Report a bug
-                            </span>}
+                            </span>} */}
                             {isBugOpen && <BugReport setIsBugOpen={setIsBugOpen} />}
-                        </motion.div> */}
+                        </motion.div>
                     </div>
 
                     <div className="md:hidden">

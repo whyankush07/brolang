@@ -1,26 +1,21 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
-import { ThemeProvider } from "@/context/ThemeProvider";
-import { CodeProvider } from "@/context/CodeContext";
 import { cn } from "@/lib/utils";
-import NextTopLoader from 'nextjs-toploader';
-import { Toaster } from "@/components/ui/toaster";
-import OfflineNotification from "@/components/Offline-navigator";
 import CustomHead from "@/components/custom-head";
 import { metadata as siteMetadata } from "@/config/metadata";
-import { ScrollBarProps } from "@/components/Scrollbar";
-import Header from "@/components/Header";
-import { Analytics } from "@vercel/analytics/react"
+import ProviderWrapper from "./provider";
 
-const satoshi = localFont({
-  display: 'swap',
-  src: [
-    {
-      path: './fonts/satoshi.ttf',
-    },
-  ],
-  variable: '--font-satoshi',
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = siteMetadata;
@@ -37,29 +32,14 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'font-satoshi antialiased',
-          satoshi.variable
+          'font-geist-sans antialiased',
+          geistSans.variable,
+          geistMono.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <CodeProvider>
-            <ScrollBarProps >
-              <NextTopLoader
-                showSpinner={false}
-              />
-              <Header />
-              <OfflineNotification />
-              <Analytics />
-              {children}
-              <Toaster />
-            </ScrollBarProps>
-          </CodeProvider>
-        </ThemeProvider>
+        <ProviderWrapper>
+          {children}
+        </ProviderWrapper>
       </body>
     </html>
   );

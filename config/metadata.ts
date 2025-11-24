@@ -61,7 +61,7 @@ export const metadata = {
             alt: `${siteConfig.name} - Fun Programming Language Playground`,
             type: "image/png",
         }],
-        videos: [],
+        videos: ["https://youtu.be/NBBNHUubYzA"],
     },
 
     twitter: {

@@ -57,16 +57,19 @@ export default function SignInWithCredentials() {
                 email,
                 code,
             } as any);
-
+            console.log("Signin response: ", res)
             if (res && (res as any).error) {
                 setError((res as any).error || 'Sign in failed');
-            } else {
+                setLoading(false);
+            } else if (res?.ok) {
                 toast.success('Signed in successfully!');
-                router.replace('/playground');
+                window.location.href = '/playground';
+            } else {
+                setError('Sign in failed. Please try again.');
+                setLoading(false);
             }
         } catch (err: any) {
             setError(err?.message || 'Sign in error');
-        } finally {
             setLoading(false);
         }
     }

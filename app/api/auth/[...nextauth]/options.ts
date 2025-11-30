@@ -39,7 +39,18 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
 
+    session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60,
+    },
+
     secret: process.env.NEXTAUTH_SECRET,
+
+    debug: process.env.NODE_ENV === 'development',
+
+    pages: {
+        signIn: '/login',
+    },
 
     callbacks: {
         async signIn({ user }) {
@@ -73,14 +84,21 @@ export const authOptions: NextAuthOptions = {
             }
         },
 
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             try {
-                if (user?.email) {
-                    const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
+                if (user) {
+                    token.id = user.id;
+                    token.name = user.name;
+                    token.email = user.email;
+                }
+                else if (token.email && !token.id) {
+                    const dbUser = await prisma.user.findUnique({ 
+                        where: { email: token.email as string } 
+                    });
                     if (dbUser) {
-                        (token as any).id = dbUser.id;
-                        (token as any).name = dbUser.name;
-                        (token as any).email = dbUser.email;
+                        token.id = dbUser.id;
+                        token.name = dbUser.name;
+                        token.email = dbUser.email;
                     }
                 }
             } catch (err) {
@@ -98,8 +116,10 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
 
-        redirect() {
-            return '/playground';
+        async redirect({ url, baseUrl }) {
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            else if (new URL(url).origin === baseUrl) return url;
+            return `${baseUrl}/playground`;
         }
     },
 };
